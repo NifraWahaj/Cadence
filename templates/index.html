@@ -1,31 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Recommendation System</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Recommendation System</h1>
     <form id="recommendForm" method="POST" action="/recommend">
-        <label for="song_name">Enter Song Name:</label>
-        <input type="text" id="song_name" name="song_name" required>
-        <br>
-        <label for="artist_name">Enter Artist Name:</label>
-        <input type="text" id="artist_name" name="artist_name" required>
-        <br>
-        <button type="submit">Recommend</button>
+      <label for="song_name">Enter Song Name:</label>
+      <input type="text" id="song_name" name="song_name" required />
+      <br />
+      <label for="artist_name">Enter Artist Name:</label>
+      <input type="text" id="artist_name" name="artist_name" required />
+      <br />
+      <button type="submit" onclick="recommend()">Recommend</button>
     </form>
     <div id="recommendations">
-        <h2>Recommendations</h2>
-        <ul>
-            {% for recommendation in recommendations %}
-                <li>{{ recommendation.song_name }}</li>
-            {% endfor %}
-        </ul>
+      <h2>Recommendations</h2>
+      <ul id="recommendationsList">
+        <!-- Recommendations will be displayed here -->
+      </ul>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  
-</body>
+    <script>
+      function recommend() {
+        var songName = $("#song_name").val();
+        var artistName = $("#artist_name").val();
+        $.ajax({
+          type: "POST",
+          url: "/recommend",
+          data: { song_name: songName, artist_name: artistName },
+          success: function (response) {
+            // Clear previous recommendations
+            $("#recommendationsList").empty();
+            // Append new recommendations
+            $.each(response.recommendations, function (index, recommendation) {
+              $("#recommendationsList").append(
+                "<li>" + recommendation.song_name + "</li>"
+              );
+            });
+          },
+        });
+      }
+    </script>
+  </body>
 </html>
