@@ -14,13 +14,9 @@ def index():
 
 @app.route("/recommend", methods=["POST"])
 def recommend():
-    # Get input parameters from the form
     input_song_name = request.form["song_name"]
     input_artist_name = request.form["artist_name"]
     print("FROM JSON:  ", input_song_name, input_artist_name)
-
-    # ===============================================================================================================
-    # Call the song_recommender.py script with input parameters
 
     client_id = "285310898d54476f9b5f27c10f666371"
     client_secret = "3eae50b7f4ef437b91a08150287493fd"
@@ -68,7 +64,14 @@ def recommend():
         "Stay",
         "Thunder",
     ]
-    # Initialize Spotipy client
+
+    # Fetching Spotify Track IDs
+
+    # Spotipy library used to interact with the Spotify API, aiming to retrieve the track
+    # IDs for the list of test songs. it initializes a spotipy client with the provided client ID & secret.
+    # Then, it iterates through each song name in the list, conducting a search on Spotify for
+    # tracks matching each song name. For each search result, it extracts the trackID and appends it to song_ids list.
+
     client_credentials_manager = SpotifyClientCredentials(
         client_id=client_id, client_secret=client_secret
     )
@@ -76,16 +79,30 @@ def recommend():
 
     song_ids = []
 
-    # Iterate through the list of song names
     for song_name in song_names:
-        # Search for the song
         results = sp.search(q=song_name, type="track", limit=1)
         for item in results["tracks"]["items"]:
-            # Get the track ID
             song_ids.append(item["id"])
 
+    # Retrieving Detailed Information for Spotify Tracks
+    # spotify API is used to get detailed info about the tracks identified by their trackIDs stored in the
+    # song_ids list. By calling the sp. tracks method on the Spotipy client (sp), the script sends a
+    # request to the Spotify API to fetch details about the specified tracks. the retrieved info includes track names,
+    # artists, albums, release dates, popularity scores, other metadata and is stored in the variable tracks_info.
+
     tracks_info = sp.tracks(song_ids)
+
+    # Retrieving Audio Features for Spotify Tracks
+    # spotify api used to fetch acquire audio features for the tracks by invoking the sp.audio_features method.
+    # it sends a request to retrieve audio feature data for the specified tracks. the fetched audio feature info like attributes
+    # such as acousticness, danceability, energy, instrumentalness, tempo, & others, is stored in the variable tracks_audio_features.
     tracks_audio_features = sp.audio_features(song_ids)
+
+    # Saving Spotify Tracks Info to JSON Files
+    # the retrieved info about tracks and their audio features is saved to separate JSON files.
+    # json.dump method is used to serialize the dictionaries (tracks_info & tracks_audio_features) containing
+    # the track info & audio features into JSON format. tracks detailed information stored in 'tracks_info.json'
+    # audio featuresstored in 'tracks_features.json'.
 
     with open("tracks_info.json", "w") as outfile:
         json.dump(tracks_info, outfile, indent=4)
@@ -93,15 +110,27 @@ def recommend():
         json.dump(tracks_audio_features, outfile, indent=4)
 
     # Data Preprocessing
+    # Processing Spotify Tracks Information and Saving to CSV
+    # track info, initially stored in a JSON file named tracks_info.json, into a structured CSV
+    # format for enhanced accessibility and analysis. The process commences with the retrieval of the tracks's
+    # information from the JSON file, facilitated by opening the file and loading its contents into a Python dictionary
+    # named tracks_info. Subsequently, the script iterates through each track within this dictionary, meticulously
+    # extracting pertinent details such as album information, artist details, track duration, popularity, and more.
+    # To enrich the dataset, a function get_album_genres is introduced to obtain album genres based on the album ID.
+    # For each track, a dictionary named track_detail is meticulously constructed, encapsulating
+    # all the extracted information, including the fetched album genres. Following this data refinement,
+    # the script proceeds to organize the track details into a CSV file, denoted as track_details.csv, with each row
+    # representing a distinct track and its associated attributes aligned with the predefined field names.
+    # Finally, a confirmation message is printed, affirming the successful completion of the process and the
+    # saving of track details into the CSV file. This meticulous conversion process ensures the seamless transition of
+    # Spotify tracks' information into a structured format conducive to comprehensive analysis, visualization, and integration
+    # within diverse analytical workflows or applications.
 
-    # Read the contents of the tracks_info.json file into a dictionary
     with open("tracks_info.json", "r") as file:
         tracks_info = json.load(file)
 
-    # Initialize a list to store track details
     track_details = []
 
-    # Function to fetch album genres based on album ID
     def get_album_genres(album_id):
         album_info = sp.album(album_id)
         if "genres" in album_info:
@@ -109,9 +138,7 @@ def recommend():
         else:
             return []
 
-    # Iterate through each track in the tracks_info dictionary
     for track in tracks_info["tracks"]:
-        # Extract relevant information for each track
         track_detail = {
             "album_id": track["album"]["id"],
             "album_name": track["album"]["name"],
@@ -133,15 +160,11 @@ def recommend():
             "track_number": track["track_number"],
         }
 
-        # Fetch and add album genres
         album_id = track_detail["album_id"]
         album_genres = get_album_genres(album_id)
         track_detail["album_genres"] = album_genres
-
-        # Append the track detail to the track_details list
         track_details.append(track_detail)
 
-    # Define the fieldnames for the CSV file
     fieldnames = [
         "album_id",
         "album_name",
@@ -164,7 +187,6 @@ def recommend():
         "album_genres",
     ]
 
-    # Write track details to a CSV file
     with open("track_details.csv", "w", newline="") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
@@ -173,18 +195,29 @@ def recommend():
 
     print("Track details have been saved to track_details.csv")
 
+    # Processing Spotify Tracks Audio Features and Saving to CSV
+    # processing the audio features of Spotify tracks, initially stored in a JSON file named tracks_features.json,
+    # and saving them into a structured CSV format for further analysis or integration. Firstly, the script reads
+    # the contents of the tracks_features.json file, which contains the audio features of the Spotify tracks, and
+    # loads them into a Python dictionary named tracks_features. Next, it iterates through each track in the
+    # tracks_features dictionary, selectively extracting essential audio features such as danceability, energy, key,
+    # loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo, duration, and time signature.
+    # These features are crucial for analyzing the musical characteristics and styles of the tracks comprehensively.
+    # For each track, a dictionary named track_features is constructed, encapsulating the extracted audio features.
+    # These dictionaries collectively form a list named audio_features, which holds the audio features of all the
+    # tracks in a structured manner. Subsequently, the script organizes the track features into a CSV file named
+    # track_audio_features.csv. It defines the field names for the CSV file based on the extracted audio features
+    # and utilizes the csv.DictWriter class to write the audio features into the CSV file. Each row in the CSV file
+    # represents a distinct track, with its associated audio features aligned with the predefined field names
+
     import csv
 
-    # Read the contents of the tracks_features.json file into a dictionary
     with open("tracks_features.json", "r") as file:
         tracks_features = json.load(file)
 
-    # Initialize a list to store audio features
     audio_features = []
 
-    # Iterate through each track in the tracks_features dictionary
     for track in tracks_features:
-        # Extract only the required features for each track
         track_features = {
             "danceability": track["danceability"],
             "energy": track["energy"],
@@ -201,10 +234,8 @@ def recommend():
             "duration_ms": track["duration_ms"],
             "time_signature": track["time_signature"],
         }
-        # Append the track features to the audio_features list
         audio_features.append(track_features)
 
-    # Define the fieldnames for the CSV file
     fieldnames = [
         "danceability",
         "energy",
@@ -222,7 +253,6 @@ def recommend():
         "time_signature",
     ]
 
-    # Write audio features to a CSV file
     with open("track_audio_features.csv", "w", newline="") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
@@ -231,25 +261,26 @@ def recommend():
 
     print("Audio features have been saved to track_audio_features.csv")
 
-    # Audio features have been saved to track_audio_features.csv
-
+    # Merging Track Details and Audio Features Data and Saving to CSV
+    # combining info about Spotify tracks' details and their audio features into a single dataset.
+    # First, it reads the track details (like album, artist, etc.) and audio features (like danceability, energy, etc.)
+    # from csv files. Then, it goes through each track and its corresponding audio features, matching them based
+    # on their track IDs. When a match is found, it merges the details and features into one entry, creating a
+    # combined dataset.
     import csv
 
-    # Read track details from CSV
     track_details = []
     with open("track_details.csv", "r", newline="") as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             track_details.append(row)
 
-    # Read audio features from CSV
     audio_features = []
     with open("track_audio_features.csv", "r", newline="") as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             audio_features.append(row)
 
-    # Merge data based on track ID
     merged_data = []
     for detail in track_details:
         for feature in audio_features:
@@ -257,7 +288,6 @@ def recommend():
                 merged_data.append({**detail, **feature})
                 break
 
-    # Define fieldnames for the merged CSV
     fieldnames = [
         "album_id",
         "album_name",
@@ -292,7 +322,6 @@ def recommend():
         "time_signature",
     ]
 
-    # Write merged data to a new CSV file
     with open("merged_track_data.csv", "w", newline="") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
@@ -301,82 +330,72 @@ def recommend():
 
     print("Merged track data has been saved to merged_track_data.csv")
 
-    # Merged track data has been saved to merged_track_data.csv
-
     # Feature Engineering
-
+    # Reading CSV File and Displaying Missing Values using Pandas
+    # uses pandas library to read "songs.csv" and displays the count of missing values in each column of the DF.
+    # pd.read_csv method used to to read the file & load contents into DF 'df'. then, calculating the number of
+    # missing values (NaN or NULL) present in each column. the sum of missing values for each column calculating.
+    # printing missing_values series, which displays the count of missing values for each column in the DF.
     import pandas as pd
 
-    # Read the CSV file into a DataFrame
     df = pd.read_csv("songs.csv")
-
-    # Display missing values
     missing_values = df.isnull().sum()
     print(missing_values)
 
+    # Data Preprocessing with Min-Max Normalization, One-Hot Encoding, and Feature Engineering
+    # using scikit-learn an&d pandas libraries
+    # Combining 'track_name' & 'artist_name' into a new col named 'song'. Removing 'lyrics' and 'len' cols from DF.
+    # one-hot encoding on categorical columns ('topic', 'artist_name', and 'genre') using the pd.get_dummies function.
+    # to convert them into binary vectors. Min-Max Normalization to the 'release_date' col - scales the values to a
+    # range between 0 and 1. printing the first few rows of the modified DF
     from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 
     df["song"] = df["track_name"] + df["artist_name"]
 
     df.to_csv("output.csv", index=False)
 
-    # Remove 'lyrics' and 'len' columns
     df.drop(["lyrics", "len"], axis=1, inplace=True)
 
-    # One-hot encoding for 'topic', 'artist_name', and 'genre' columns
     df = pd.get_dummies(df, columns=["topic", "artist_name", "genre"])
 
-    # Min-max normalization for 'release_date' column
     scaler = MinMaxScaler()
     df["release_date"] = scaler.fit_transform(df[["release_date"]])
 
-    # Display the modified DataFrame
     print(df.head())
 
-    # Get all column names from the DataFrame
+    # Filtering Columns Starting with "topic" from the DataFrame
+    # initially, it retrieves all col names from df. then, filters out col names starting with the 'topic'.
+    # The filtered col names are then stored in topic_columns., which is printed
     all_columns = df.columns
 
-    print(all_columns)
-
-    # Filter out the column names that start with "topic"
     topic_columns = [col for col in all_columns if col.startswith("topic")]
 
-    print(topic_columns)
+    # Filtering Columns Starting with "genre" from the DataFrame
+    # This cell filters the column names from the DataFrame df, specifically targeting columns that begin with the string "genre".
+    # retrieves all col names from df, storing in all_columns. filters out col names that start with 'genre'.
 
-    # Get all column names from the DataFrame
     all_columns = df.columns
-
-    # Filter out the column names that start with "topic"
     topic_columns = [col for col in all_columns if col.startswith("genre")]
 
     print(topic_columns)
+ ------------------
 
-    # Content Based Filtering
-    # Using content based filterting on specific columns to get 2000 most matching songs
-
-    import numpy as np
-
-    # Define a custom similarity function
     def custom_similarity(song1, song2):
-        # Extract features from songs
         features_song1 = np.array(
             [song1["age"]] + [song1[col] for col in topic_genre_columns]
         )
         features_song2 = np.array(
             [song2["age"]] + [song2[col] for col in topic_genre_columns]
         )
-
-        # Calculate Euclidean distance between the feature vectors
+        # euclidean dist b/w feature vectors
         distance = np.linalg.norm(features_song1 - features_song2)
 
         return distance
-
-    # Get the column names for 'topic' and 'genre' after one-hot encoding
+    
     topic_genre_columns = [
         col for col in df.columns if col.startswith("topic") or col.startswith("genre")
     ]
 
-    # Function to find the index of a song by its name
     def find_song_index(song_name):
         return df.index[df["song"] == song_name].tolist()
 
@@ -567,7 +586,7 @@ def recommend():
         recommendations.append({"song_name": song_name})
         print(i + 1, song_name)
 
-    print("DONE!")
+    print("DONE")
     song_name = ""
     artist_name = ""
     # Return recommendations as JSON response
