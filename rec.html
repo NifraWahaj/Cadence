@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Cadence</title>
+      <link rel="icon" href="logo.png" type="image/png">
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+      
+        <style>
+         body {
+         background: linear-gradient(to right, #4e54c8, #8f94fb); 
+         color: #fff;
+         }
+         .container {
+         padding: 20px;
+         }
+         #response {
+         margin-top: 20px;
+         padding: 10px;
+         border-radius: 5px;
+         animation: fadeIn 1s ease-in-out; 
+         position: relative; 
+         z-index: 1; 
+         }
+         .footer {
+         background-color: rgba(255, 255, 255, 0.2); 
+         color: #eee; 
+         position: fixed; 
+         left: 0;
+         bottom: 0;
+         width: 100%;
+         height: 15px;
+         display: flex;
+         justify-content: center; 
+         align-items: center; 
+         font-size: 10px; 
+         padding: 10px 0; 
+         }
+         @keyframes fadeIn {
+         from { opacity: 0; }
+         to { opacity: 1; }
+         }
+         #response p {
+         transition: transform 0.3s; 
+         }
+         #response p:hover {
+         transform: scale(1.1);
+         }
+         #searchForm {
+         margin-bottom: 20px;
+         }
+         input[type="text"] {
+         background-color: rgba(255, 255, 255, 0.7); 
+         color: #000; 
+         }
+         input[type="text"]:focus {
+         background-color: rgba(255, 255, 255, 0.9);
+         }
+         .footer .container {
+         margin-bottom: 0;
+         }
+         #response p:hover {
+         transform: scale(1.1);
+         background-color: rgba(255, 255, 255,0.2); 
+         }
+         .text-line{
+         color: #eee;
+         font-size: 18px;
+         }
+         .custom-search-button {
+         background-color: #f7d15f; 
+         color: #000; 
+         border: none; 
+         padding: 10px 20px;
+         border-radius: 5px; 
+         cursor: pointer; 
+         }
+         .custom-search-button:hover {
+         background-color: #fdc10b; 
+         }
+         .form-control:hover{
+         background-color: #eee;
+         }
+        </style>
+  </head>
+   <body>
+    <!-- BODY -->
+      <div class="container text-center">
+         <h1 class="mt-5"></h1>
+         <form id="searchForm">
+            <div class="form-group">
+               <label for="songInput">Enter a song:</label>
+               <input type="text" class="form-control" id="songInput" placeholder="Enter song name" required>
+            </div>
+            <button type="submit" class="custom-search-button">Search</button>
+         </form>
+         <p class="text-line"> Similar songs: </p>
+         <div id="response" class="mt-3">
+            <!-- Song results will be displayed here -->
+         </div>
+      </div>
+      <br>
+     <!-- FOOTER -->
+      <footer class="footer mt-auto py-3">
+         <div class="container text-center">
+            Copyright © 2024 Cadence.  All rights reserved.
+         </div>
+      </footer>
+       
+      <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        
+      <script>
+         // Dummy function to simulate fetching data
+         function fetchSongs(songName) {
+           // Dummy data
+           const songs = [
+             { name: 'Song 1', artist: 'Artist 1' },
+             { name: 'Song 2', artist: 'Artist 2' },
+             { name: 'Song 3', artist: 'Artist 3' },
+             { name: 'Song 4', artist: 'Artist 4' },
+             { name: 'Song 5', artist: 'Artist 5' },
+             { name: 'Song 6', artist: 'Artist 6' },
+             { name: 'Song 7', artist: 'Artist 7' },
+             { name: 'Song 8', artist: 'Artist 8' },
+             { name: 'Song 9', artist: 'Artist 9' },
+             { name: 'Song 10', artist: 'Artist 10' },
+             { name: 'Song 11', artist: 'Artist 11' },
+             { name: 'Song 12', artist: 'Artist 12' },
+             { name: 'Song 13', artist: 'Artist 13' },
+             { name: 'Song 14', artist: 'Artist 14' },
+             { name: 'Song 15', artist: 'Artist 15' },
+             { name: 'Song 16', artist: 'Artist 16' },
+             { name: 'Song 17', artist: 'Artist 17' },
+             { name: 'Song 18', artist: 'Artist 18' },
+             { name: 'Song 19', artist: 'Artist 19' },
+             { name: 'Song 20', artist: 'Artist 20' }
+           ];
+         
+           // Simulate AJAX response after 1 second
+           return new Promise(resolve => {
+             setTimeout(() => {
+               resolve(songs);
+             }, 1000);
+           });
+         }
+         
+         // Handle form submission
+         $('#searchForm').submit(function(event) {
+           event.preventDefault(); // Prevent default form submission
+           
+           const songName = $('#songInput').val(); // Get the input value
+           fetchSongs(songName).then(songs => {
+             // Clear previous response
+             $('#response').empty();
+             // Display songs
+             songs.forEach(song => {
+               $('#response').append(`<p>${song.name} - ${song.artist}</p>`);
+             });
+           });
+         });
+      </script>
+   </body>
+</html>

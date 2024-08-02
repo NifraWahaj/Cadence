@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadence</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+         body {
+         background: linear-gradient(to right, #4e54c8, #8f94fb); 
+         color: #fff;
+         }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .list-group-item {
+            background-color: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.125);
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .list-group-item:hover {
+            background-color: #f0f0f0;
+        }
+        h1 {
+            text-align: center;
+            color: #343a40;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5 mb-4">Similar Songs:</h1>
+        <ul class="list-group">
+            {% for recommendation in recommendations %}
+            <li class="list-group-item">{{ recommendation.song_name }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <!-- Include Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
