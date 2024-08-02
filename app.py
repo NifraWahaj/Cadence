@@ -19,8 +19,8 @@ def recommend():
     print("FROM JSON:  ", input_song_name, input_artist_name)
 
     recommendations = []
-    client_id = "285310898d54476f9b5f27c10f666371"
-    client_secret = "3eae50b7f4ef437b91a08150287493fd"
+    client_id = ""
+    client_secret = ""
 
     import spotipy
     from spotipy.oauth2 import SpotifyClientCredentials
