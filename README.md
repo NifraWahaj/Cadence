@@ -1,6 +1,5 @@
 # Cadence
-
-Cadence utilizes the Spotify API to gather information about songs and provide song recommendations based on user input. It includes s fetching song details, extracting audio features, data preprocessing, content-based filtering, and K Nearest Neighbors (KNN) recommendation algorithms.
+Cadence is a music recommender that uses K-Nearest Neighbors (KNN), content-based filtering and custom similarity algorithms to suggest 20 songs similar to a user-provided song. The recommendations are drawn exclusively from the dataset, with comparisons based on various audio and song features within that dataset.
 
 ## Usage
 
